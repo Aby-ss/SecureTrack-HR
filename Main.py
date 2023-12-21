@@ -52,3 +52,18 @@ def print_employee_data():
     for row in rows:
         print(row)
     employee_conn.close()
+    
+if user_identification == password:
+    print(Panel("User Authorised!", box=box.SQUARE, border_style="bold green"))
+
+    print(Panel.fit("Choose an Option:\n1- Add new employee\n2- Discard employee\n3- Print employee database", box = box.SQUARE, border_style="bold white"))
+
+    option_choice = Prompt.ask("Choose a number as your option ")
+
+    if int(option_choice) == 1:
+        add_employee()
+    elif int(option_choice) == 2:
+        print_employee_data()
+else:
+    
+    print(Panel("Incorrect Password", box=box.SQUARE, border_style="bold red"))
