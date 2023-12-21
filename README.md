@@ -1,4 +1,5 @@
 # SecureTrack-HR
+[![wakatime](https://wakatime.com/badge/github/Aby-ss/SecureTrack-HR.svg)](https://wakatime.com/badge/github/Aby-ss/SecureTrack-HR)
 **In designing an Employee Management System integrating face recognition for attendance with an SQL Database, the core architecture revolves around efficient data management, authentication, and system integration. The SQL Database serves as the backbone for storing employee data, payroll information, scheduling, and attendance records.**
 
 **The system begins with the SQL Database schema setup, encompassing tables for Employees, Payroll, Scheduling, and potentially a separate table for biometric data linked to employees' profiles. These tables store employee details, salary information, schedules, and attendance records, ensuring a comprehensive repository for managing workforce-related data.**
