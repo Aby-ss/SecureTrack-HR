@@ -17,7 +17,7 @@ from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn
 from rich.traceback import install
 install(show_locals=True)
 
-employee_conn = sqlite3.connect("EmployeeDatabase.db")
+employee_conn = sqlite3.connect("Databse/EmployeeDatabase.db")
 cursor = employee_conn.cursor()
 
 cursor.execute('''
