@@ -45,6 +45,13 @@ def add_employee():
 
     employee_conn.commit()
     employee_conn.close()
+    
+def discard_employee():
+    discard_name = Prompt.ask("Enter the name of the employee to discard")
+    cursor.execute("DELETE FROM EmployeeDatabase WHERE Name = ?", (discard_name,))
+    
+    employee_conn.commit()
+    employee_conn.close()
 
 def print_employee_data():
     cursor.execute("SELECT * FROM EmployeeDatabase")
@@ -62,6 +69,8 @@ if user_identification == password:
 
     if int(option_choice) == 1:
         add_employee()
+    elif int(option_choice) == 2:
+        discard_employee()
     elif int(option_choice) == 3:
         print_employee_data()
 else:
