@@ -17,7 +17,7 @@ from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn
 from rich.traceback import install
 install(show_locals=True)
 
-employee_conn = sqlite3.connect("Databse/EmployeeDatabase.db")
+employee_conn = sqlite3.connect("EmployeeDatabase.db")
 cursor = employee_conn.cursor()
 
 cursor.execute('''
@@ -62,7 +62,7 @@ if user_identification == password:
 
     if int(option_choice) == 1:
         add_employee()
-    elif int(option_choice) == 2:
+    elif int(option_choice) == 3:
         print_employee_data()
 else:
     
