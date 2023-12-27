@@ -1,6 +1,8 @@
 from keras.models import load_model  # TensorFlow is required for Keras to work
 import cv2  # Install opencv-python
 import numpy as np
+import sqlite3
+import datetime
 
 from rich import print, box, text
 
@@ -15,6 +17,23 @@ from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn
 from rich.traceback import install
 install(show_locals=True)
 
+# Database connection
+employee_conn = sqlite3.connect("EmployeeDatabase.db")
+cursor = employee_conn.cursor()
+
+def update_clock_times(employee_name):
+    cursor.execute("SELECT ClockIn, ClockOut FROM EmployeeDatabase WHERE Name = ?", (employee_name,))
+    row = cursor.fetchone()
+    current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    if row:
+        clock_in, clock_out = row
+        if clock_out is not None or clock_in is None:
+            cursor.execute("UPDATE EmployeeDatabase SET ClockIn = ?, ClockOut = NULL WHERE Name = ?", (current_time, employee_name))
+        else:
+            cursor.execute("UPDATE EmployeeDatabase SET ClockOut = ? WHERE Name = ?", (current_time, employee_name))
+        employee_conn.commit()
+
 # Disable scientific notation for clarity
 np.set_printoptions(suppress=True)
 
@@ -26,40 +45,29 @@ class_names = open("labels.txt", "r").readlines()
 
 # CAMERA can be 0 or 1 based on default camera of your computer
 camera = cv2.VideoCapture(0)
+confidence_threshold = 0.8
 
 while True:
-    # Grab the webcamera's image.
     ret, image = camera.read()
-
-    # Resize the raw image into (224-height,224-width) pixels
     image = cv2.resize(image, (224, 224), interpolation=cv2.INTER_AREA)
-
-    # Show the image in a window
     cv2.imshow("Webcam Image", image)
 
-    # Make the image a numpy array and reshape it to the models input shape.
     image = np.asarray(image, dtype=np.float32).reshape(1, 224, 224, 3)
-
-    # Normalize the image array
     image = (image / 127.5) - 1
 
-    # Predicts the model
     prediction = model.predict(image)
     index = np.argmax(prediction)
-    class_name = class_names[index]
+    class_name = class_names[index].strip()
     confidence_score = prediction[0][index]
 
-    # Print prediction and confidence score
-    print(Panel.fit(f"Class: {class_name[2:]}\nConfidence Score: {str(np.round(confidence_score * 100))[:-2]}%", border_style="bold green", box=box.SQUARE))
-    #print("Class:", class_name[2:], end="")
-    #print("Confidence Score:", str(np.round(confidence_score * 100))[:-2], "%")
+    if confidence_score > confidence_threshold:
+        print(Panel.fit(f"Class: {class_name}\nConfidence Score: {str(np.round(confidence_score * 100))[:-2]}%", border_style="bold green", box=box.SQUARE))
+        update_clock_times(class_name)
 
-    # Listen to the keyboard for presses.
     keyboard_input = cv2.waitKey(1)
-
-    # 27 is the ASCII for the esc key on your keyboard.
-    if keyboard_input == 27:
+    if keyboard_input == 27:  # ASCII for the esc key
         break
 
 camera.release()
 cv2.destroyAllWindows()
+employee_conn.close()

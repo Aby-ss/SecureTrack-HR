@@ -30,6 +30,15 @@ cursor.execute('''
                )
                ''')
 
+cursor.execute('''
+    ALTER TABLE EmployeeDatabase
+    ADD COLUMN ClockIn TEXT
+    ''')
+cursor.execute('''
+    ALTER TABLE EmployeeDatabase
+    ADD COLUMN ClockOut TEXT
+    ''')
+
 password = "4556786"
 user_identification = Prompt.ask("Enter Password ")
 
