@@ -50,8 +50,9 @@ while True:
     confidence_score = prediction[0][index]
 
     # Print prediction and confidence score
-    print("Class:", class_name[2:], end="")
-    print("Confidence Score:", str(np.round(confidence_score * 100))[:-2], "%")
+    print(Panel.fit(f"Class: {class_name[2:]}\  nConfidence Score: {str(np.round(confidence_score * 100))[:-2]}%", border_style="bold green", box=box.SQUARE))
+    #print("Class:", class_name[2:], end="")
+    #print("Confidence Score:", str(np.round(confidence_score * 100))[:-2], "%")
 
     # Listen to the keyboard for presses.
     keyboard_input = cv2.waitKey(1)
