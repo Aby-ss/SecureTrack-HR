@@ -50,7 +50,7 @@ while True:
     confidence_score = prediction[0][index]
 
     # Print prediction and confidence score
-    print(Panel.fit(f"Class: {class_name[2:]}\  nConfidence Score: {str(np.round(confidence_score * 100))[:-2]}%", border_style="bold green", box=box.SQUARE))
+    print(Panel.fit(f"Class: {class_name[2:]}\nConfidence Score: {str(np.round(confidence_score * 100))[:-2]}%", border_style="bold green", box=box.SQUARE))
     #print("Class:", class_name[2:], end="")
     #print("Confidence Score:", str(np.round(confidence_score * 100))[:-2], "%")
 
