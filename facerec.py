@@ -24,14 +24,17 @@ cursor = employee_conn.cursor()
 def update_clock_times(employee_name):
     cursor.execute("SELECT ClockIn, ClockOut FROM EmployeeDatabase WHERE Name = ?", (employee_name,))
     row = cursor.fetchone()
-    current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    current_time = datetime.datetime.now()
 
     if row:
         clock_in, clock_out = row
-        if clock_out is not None or clock_in is None:
-            cursor.execute("UPDATE EmployeeDatabase SET ClockIn = ?, ClockOut = NULL WHERE Name = ?", (current_time, employee_name))
+        if clock_in is not None:
+            clock_in_time = datetime.datetime.strptime(clock_in, "%Y-%m-%d %H:%M:%S")
+            time_difference = current_time - clock_in_time
+            if clock_out is None and time_difference.total_seconds() >= 180:  # 180 seconds = 3 minutes
+                cursor.execute("UPDATE EmployeeDatabase SET ClockOut = ? WHERE Name = ?", (current_time.strftime("%Y-%m-%d %H:%M:%S"), employee_name))
         else:
-            cursor.execute("UPDATE EmployeeDatabase SET ClockOut = ? WHERE Name = ?", (current_time, employee_name))
+            cursor.execute("UPDATE EmployeeDatabase SET ClockIn = ?, ClockOut = NULL WHERE Name = ?", (current_time.strftime("%Y-%m-%d %H:%M:%S"), employee_name))
         employee_conn.commit()
 
 # Disable scientific notation for clarity
@@ -62,7 +65,7 @@ while True:
 
     if confidence_score > confidence_threshold:
         print(Panel.fit(f"Class: {class_name}\nConfidence Score: {str(np.round(confidence_score * 100))[:-2]}%", border_style="bold green", box=box.SQUARE))
-        update_clock_times(class_name)
+        update_clock_times("Rao")
 
     keyboard_input = cv2.waitKey(1)
     if keyboard_input == 27:  # ASCII for the esc key
