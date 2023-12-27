@@ -2,6 +2,19 @@ from keras.models import load_model  # TensorFlow is required for Keras to work
 import cv2  # Install opencv-python
 import numpy as np
 
+from rich import print, box, text
+
+
+from rich.align import Align
+from rich.panel import Panel
+
+from rich.prompt import Prompt
+from rich.progress import track
+from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn
+
+from rich.traceback import install
+install(show_locals=True)
+
 # Disable scientific notation for clarity
 np.set_printoptions(suppress=True)
 
