@@ -22,20 +22,23 @@ employee_conn = sqlite3.connect("EmployeeDatabase.db")
 cursor = employee_conn.cursor()
 
 def update_clock_times(employee_name):
-    cursor.execute("SELECT ClockIn, ClockOut FROM EmployeeDatabase WHERE Name = ?", (employee_name,))
-    row = cursor.fetchone()
-    current_time = datetime.datetime.now()
-
-    if row:
-        clock_in, clock_out = row
-        if clock_in is not None:
-            clock_in_time = datetime.datetime.strptime(clock_in, "%Y-%m-%d %H:%M:%S")
-            time_difference = current_time - clock_in_time
-            if clock_out is None and time_difference.total_seconds() >= 180:  # 180 seconds = 3 minutes
-                cursor.execute("UPDATE EmployeeDatabase SET ClockOut = ? WHERE Name = ?", (current_time.strftime("%Y-%m-%d %H:%M:%S"), employee_name))
-        else:
-            cursor.execute("UPDATE EmployeeDatabase SET ClockIn = ?, ClockOut = NULL WHERE Name = ?", (current_time.strftime("%Y-%m-%d %H:%M:%S"), employee_name))
+    try:
+        cursor.execute("SELECT ClockIn, ClockOut FROM EmployeeDatabase WHERE Name = ?", (employee_name,))
+        row = cursor.fetchone()
+        current_time = datetime.datetime.now()
+        
+        print(Panel.fit("Choose an Option:\n1- Clock In for the day\n2- Clock Out of Work", box=box.SQUARE, border_style="bold white"))
+        user_choice = Prompt.ask("Enter a Choice ")
+        
+        if int(user_choice) == 1:
+            cursor.execute("UPDATE EmployeeDatabase SET ClockIn = ? WHERE Name = ?", (current_time.strftime("%Y-%m-%d %H:%M:%S"), employee_name))
+            print(f"Clocked In at {current_time.strftime('%Y-%m-%d %H:%M:%S')}")
+        elif int(user_choice) == 2:
+            cursor.execute("UPDATE EmployeeDatabase SET ClockOut = ? WHERE Name = ?", (current_time.strftime("%Y-%m-%d %H:%M:%S"), employee_name))
+            print(f"Clocked Out at {current_time.strftime('%Y-%m-%d %H:%M:%S')}")
         employee_conn.commit()
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 # Disable scientific notation for clarity
 np.set_printoptions(suppress=True)
