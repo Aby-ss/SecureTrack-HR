@@ -21,24 +21,33 @@ install(show_locals=True)
 employee_conn = sqlite3.connect("EmployeeDatabase.db")
 cursor = employee_conn.cursor()
 
-def update_clock_times(employee_name):
+def clock_in_employee(employee_name):
+    current_time = datetime.datetime.now()
     try:
-        cursor.execute("SELECT ClockIn, ClockOut FROM EmployeeDatabase WHERE Name = ?", (employee_name,))
-        row = cursor.fetchone()
-        current_time = datetime.datetime.now()
-        
-        print(Panel.fit("Choose an Option:\n1- Clock In for the day\n2- Clock Out of Work", box=box.SQUARE, border_style="bold white"))
-        user_choice = Prompt.ask("Enter a Choice ")
-        
-        if int(user_choice) == 1:
-            cursor.execute("UPDATE EmployeeDatabase SET ClockIn = ? WHERE Name = ?", (current_time.strftime("%Y-%m-%d %H:%M:%S"), employee_name))
-            print(f"Clocked In at {current_time.strftime('%Y-%m-%d %H:%M:%S')}")
-        elif int(user_choice) == 2:
-            cursor.execute("UPDATE EmployeeDatabase SET ClockOut = ? WHERE Name = ?", (current_time.strftime("%Y-%m-%d %H:%M:%S"), employee_name))
-            print(f"Clocked Out at {current_time.strftime('%Y-%m-%d %H:%M:%S')}")
+        cursor.execute("UPDATE EmployeeDatabase SET ClockIn = ? WHERE Name = ?", (current_time.strftime("%Y-%m-%d %H:%M:%S"), employee_name))
         employee_conn.commit()
+        print(f"Clocked In at {current_time.strftime('%Y-%m-%d %H:%M:%S')}")
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"Error during Clock-In: {e}")
+
+def clock_out_employee(employee_name):
+    current_time = datetime.datetime.now()
+    try:
+        cursor.execute("UPDATE EmployeeDatabase SET ClockOut = ? WHERE Name = ?", (current_time.strftime("%Y-%m-%d %H:%M:%S"), employee_name))
+        employee_conn.commit()
+        print(f"Clocked Out at {current_time.strftime('%Y-%m-%d %H:%M:%S')}")
+    except Exception as e:
+        print(f"Error during Clock-Out: {e}")
+
+print(Panel.fit("Choose an Option:\n1- Clock In for the day\n2- Clock Out of Work", box=box.SQUARE, border_style="bold white"))
+user_choice = Prompt.ask("Enter a Choice")
+
+employee_name = "Rao"  # Replace with the actual employee name
+
+if int(user_choice) == 1:
+    clock_in_employee(employee_name)
+elif int(user_choice) == 2:
+    clock_out_employee(employee_name)
 
 # Disable scientific notation for clarity
 np.set_printoptions(suppress=True)
@@ -68,7 +77,6 @@ while True:
 
     if confidence_score > confidence_threshold:
         print(Panel.fit(f"Class: {class_name}\nConfidence Score: {str(np.round(confidence_score * 100))[:-2]}%", border_style="bold green", box=box.SQUARE))
-        update_clock_times("Rao")
 
     keyboard_input = cv2.waitKey(1)
     if keyboard_input == 27:  # ASCII for the esc key
